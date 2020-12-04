@@ -128,6 +128,7 @@ export class MainComponent extends Component {
                     }
                 }}>
                 <Stack.Screen name="Favorites" component={FavoritesComponent} />
+                <Stack.Screen name="DishDetail" component={DishDetail} options={{title: 'Dish Detail',}}/>
             </Stack.Navigator>
             );
         }
