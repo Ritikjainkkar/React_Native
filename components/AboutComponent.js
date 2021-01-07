@@ -4,6 +4,8 @@ import { Card,ListItem, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
 import { Loading } from './LoadingComponent';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const mapStateToProps = state => {
     return {
@@ -56,36 +58,42 @@ function AboutComponent(props) {
     if (props.leaders.isLoading){
         return(
             <ScrollView>
-                <OurHistory />
-                <Card
-                    title='Corporate Leadership'>
-                    <Loading />
-                </Card>
+                <Animatable.View animation="fadeInDown" delay={1000}>
+                    <OurHistory />
+                    <Card
+                        title='Corporate Leadership'>
+                        <Loading />
+                    </Card>
+                </Animatable.View>
             </ScrollView>
         )
     }
     else if(props.leaders.errMess){
         return(
             <ScrollView>
-                <OurHistory />
-                <Card
-                    title='Corporate Leadership'>
-                    <Text>{props.leaders.errMess}</Text>
-                </Card>
+                <Animatable.View animation="fadeInDown" delay={1000} >
+                    <OurHistory />
+                    <Card
+                        title='Corporate Leadership'>
+                        <Text>{props.leaders.errMess}</Text>
+                    </Card>
+                </Animatable.View>
             </ScrollView>
         )
     }
     else{
         return (
             <ScrollView>
-                <OurHistory />
-                <Card>        
-                    <FlatList 
-                        data={props.leaders.leaders}
-                        renderItem={renderList}
-                        keyExtractor={item => item.id.toString()}
-                    />
-                </Card>
+                <Animatable.View animation="fadeInDown" delay={1000} >
+                    <OurHistory />
+                    <Card>        
+                        <FlatList 
+                            data={props.leaders.leaders}
+                            renderItem={renderList}
+                            keyExtractor={item => item.id.toString()}
+                        />
+                    </Card>
+                </Animatable.View>
             </ScrollView>
     )}
 }

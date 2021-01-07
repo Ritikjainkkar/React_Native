@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Menu from './MenuComponent';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Image, StyleSheet, Text, ToastAndroid } from 'react-native';
 import DishDetail from './DishDetail';
 import Home from './HomeComponent';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,11 +9,13 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '
 import ContactComponent from './ContactComponent';
 import AboutComponent  from './AboutComponent'
 import { Icon } from 'react-native-elements';
-import { ReservationComponent } from './ReservationComponent';
-
+import ReservationComponent  from './ReservationComponent';
+import LoginComponent from './LoginComponent'
 import {connect} from 'react-redux';
 import { fetchDishes, fetchComments, fetchPromotions , fetchLeaders } from '../redux/ActionCreators';
 import FavoritesComponent from './FavoritesComponent';
+import NetInfo from "@react-native-community/netinfo";
+
 
 
 const mapStateToProps = state => {
@@ -37,12 +39,36 @@ export class MainComponent extends Component {
     constructor(props) {
         super(props)
     }
+    
     componentDidMount() {
         this.props.fetchDishes();
         this.props.fetchComments();
         this.props.fetchPromotions();
         this.props.fetchLeaders();
+
+        NetInfo.addEventListener(state => {
+            switch (state.type) {
+                case 'none':
+                    ToastAndroid.show('You are now offline!', ToastAndroid.SHORT);
+                    break;
+                case 'wifi':
+                    ToastAndroid.show('You are now connected to WiFi!', ToastAndroid.SHORT);
+                    break;
+                case 'cellular':
+                    ToastAndroid.show('You are now connected to Cellular!', ToastAndroid.SHORT);
+                    break;
+                case 'unknown':
+                    ToastAndroid.show('You now have unknown connection!', ToastAndroid.SHORT);
+                    break;
+                default:
+                    break;
+              }
+          });
     }
+
+    componentWillUnmount() {
+        NetInfo.removeEventListener();
+      }
 
     render() {
 
@@ -94,6 +120,42 @@ export class MainComponent extends Component {
             );
         }
 
+        const LoginNavigator = () => { 
+
+            return(
+                <Stack.Navigator
+                headerMode="screen"
+                screenOptions={{
+                    headerShown:false,
+                    headerTintColor: '#fff',
+                    headerStyle: { backgroundColor: "#512DA8" },
+                    headerTitleStyle: {
+                        color: "#fff"            
+                    }
+                }}>
+                <Stack.Screen name="Log in" component={LoginComponent} />
+            </Stack.Navigator>
+            );
+        }
+
+        const ReservationNavigator = () => { 
+
+            return(
+                <Stack.Navigator
+                headerMode="screen"
+                screenOptions={{
+                    headerShown:false,
+                    headerTintColor: '#fff',
+                    headerStyle: { backgroundColor: "#512DA8" },
+                    headerTitleStyle: {
+                        color: "#fff"            
+                    }
+                }}>
+                <Stack.Screen name="Reservation" component={ReservationComponent} />
+            </Stack.Navigator>
+            );
+        }
+
         const MenuNavigator = () => { 
 
             return(
@@ -133,13 +195,16 @@ export class MainComponent extends Component {
             );
         }
 
+        
         const MainNavigatorScreen = () => {
 
             return (
                 <Drawer.Navigator
                 drawerContent={(props) => <CustomDrawerContent {...props}/>}
-                initialRouteName="Home"
                 headerMode="screen"
+                drawerStyle={{
+                    backgroundColor: '#c6cbef',
+                  }}
                 screenOptions={{
                     headerTintColor: '#fff',
                     headerStyle: { backgroundColor: "#512DA8" },
@@ -148,6 +213,19 @@ export class MainComponent extends Component {
                     }
                 }}
                 >
+                <Drawer.Screen name="Log in"  component={LoginNavigator} 
+                options = {{
+                        title:'Logg in',
+                        drawerLabel: 'Log in',
+                        drawerIcon : ({ tintColor }) => (
+                            <Icon
+                                name='sign-in'
+                                type='font-awesome'            
+                                size={24}
+                                color={tintColor}
+                            />
+                        ),
+                    }}/>
                 <Drawer.Screen name="Home"  component={HomeNavigator} 
                 options={{
                             title:'Home',
@@ -174,11 +252,10 @@ export class MainComponent extends Component {
                                     color={tintColor}
                               />
                             )
-
                         }}/>
 
-                <Drawer.Screen name="Reservation"  component={ReservationComponent} 
-                options={{
+                    <Drawer.Screen name="Reservation"  component={ReservationNavigator} 
+                    options={{
                             title:'Reservation',
                             drawerLabel: 'Reservation',
                             drawerIcon : ({ tintColor }) => (
@@ -190,7 +267,6 @@ export class MainComponent extends Component {
                               />
                             ),
                         }}/>
-
                 <Drawer.Screen name="Favorites"  component={FavoritesNavigator} 
                 options={{
                             title:'Favorite Dishes',
@@ -204,19 +280,6 @@ export class MainComponent extends Component {
                               />
                             ),
                         }}/>
-                <Drawer.Screen name="AboutUs" component={AboutComponent} 
-                options={{ 
-                            title: 'About us',
-                            drawerLabel: 'About Us',
-                            drawerIcon: ({ tintColor, focused }) => (
-                                <Icon
-                                  name='list'
-                                  type='font-awesome'            
-                                  size={24}
-                                  color={tintColor}
-                                />
-                              ),
-                    }}/>
                 <Drawer.Screen name="ContactUs" component={ContactComponent} 
                 options={{ 
                             title: 'Contact us',
@@ -253,7 +316,7 @@ export class MainComponent extends Component {
           }
 
         return (
-            <NavigationContainer style={{flex:1, paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight }} >
+            <NavigationContainer style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight }}>
                 <MainNavigatorScreen/>           
             </NavigationContainer>
             

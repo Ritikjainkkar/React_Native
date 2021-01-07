@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { Loading } from './LoadingComponent';
 import { deleteFavorite } from '../redux/ActionCreators';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import * as Animatable from 'react-native-animatable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const mapStateToProps = state => {
     return {
@@ -88,15 +90,17 @@ const FavoritesComponent = (props) =>{
         }
     
         return(
-            <Swipeable renderRightActions={rightButton}>
-                <ListItem bottomDivider key={index} onPress={() => navigate('DishDetail',{dishId: item.id})}>
-                    <Image style={styles.tinyLogo} source={{uri:baseUrl+item.image}}/>
-                    <ListItem.Content>
-                        <ListItem.Title>{item.name}</ListItem.Title>
-                        <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
-                    </ListItem.Content>
-                </ListItem>
-            </Swipeable>
+            <Animatable.View animation="fadeInRightBig" duration={2000}>
+                <Swipeable renderRightActions={rightButton}>
+                    <ListItem bottomDivider key={index} onPress={() => navigate('DishDetail',{dishId: item.id})}>
+                        <Image style={styles.tinyLogo} source={{uri:baseUrl+item.image}}/>
+                        <ListItem.Content>
+                            <ListItem.Title>{item.name}</ListItem.Title>
+                            <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
+                </Swipeable>
+            </Animatable.View>
         );
     }
     
@@ -113,12 +117,14 @@ const FavoritesComponent = (props) =>{
     }
     else{
         return(
-            <FlatList 
-            data={props.dishes.dishes.filter(item => props.favorites.some(el => el === item.id))}
-            renderItem={renderFavoriteItem}
-            deleteFavorite={props.deleteFavorite}
-            keyExtractor={item => item.id.toString()}
-            />
+            <Animatable.View animation="fadeInRightBig" duration={2000}>
+                <FlatList 
+                data={props.dishes.dishes.filter(item => props.favorites.some(el => el === item.id))}
+                renderItem={renderFavoriteItem}
+                deleteFavorite={props.deleteFavorite}
+                keyExtractor={item => item.id.toString()}
+                />
+            </Animatable.View>
         )
     }
 }
